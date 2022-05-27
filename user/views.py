@@ -4,12 +4,18 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 #사용자가 데이터베이스 안에 있는지 검사하는 함수
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
+# 로그인이 되어 있으면
 # Create your views here.
 def sign_up_view(request):
     #1.먼저 GET인지 POST인지 확인하는 if 문
     if request.method == 'GET':
-        return render(request, 'user/signup.html')
+        user = request.user.is_authenticated
+        if user:
+            return redirect('/')
+        else:
+            return render(request, 'user/signup.html')
     elif request.method == 'POST':
         username = request.POST.get('username', None)
         #유저네임을 post로 리퀘스트 받겠다. 유저네임이 없으면 None=빈칸으로 처리하겠다
@@ -40,4 +46,13 @@ def sign_in_view(request):
         else:
             return redirect('/sign-in')
     elif request.method == 'GET':
-        return render(request, 'user/signin.html')
+        user = request.user.is_authenticated
+        if user:
+            return redirect('/')
+        else:
+            return render(request, 'user/signin.html')
+
+@login_required
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
