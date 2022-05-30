@@ -10,4 +10,6 @@ urlpatterns = [
     path('tweet/delete/<int:id>', views.delete_tweet, name='delete-tweet'), #숫자가 올건데 id라는 변수에 저장하겠다
     path('tweet/comment/<int:id>', views.write_comment, name='write-comment'),
     path('tweet/comment/delete/<int:id>', views.delete_comment, name='delete-comment'),
+    path('tag/', views.TagCloudTV.as_view(), name='tag_cloud'),
+    path('tag/<str:tag>/', views.TaggedObjectLV.as_view(),name='tagged_object_list'),
 ]
