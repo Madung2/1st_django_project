@@ -24,11 +24,16 @@ def tweet(request):
 
     elif request.method =='POST':
         user = request.user #로그인된 사용자의 전체 정보
-        my_tweet = TweetModel() #이거 왠지 필수...나제?!?! : 클래스는 빵틀이라서
-        my_tweet.author = user
-        my_tweet.content = request.POST.get('my-content', '') #my-content는 html form name
-        my_tweet.save()
-        return redirect('/tweet')
+        content = request.POST.get('my-content','')
+
+        if content == '':
+            all_tweet = TweetModel.objects.all().order_by('-created_at')
+            return render(request, 'tweet/home.html', {'error': '글은 공백일수 없습니다'})
+        else:
+            my_tweet = TweetModel.objects.create(author=user, content=content)
+            my_tweet.save()
+            return redirect('/tweet')
+
 
 @login_required()
 def delete_tweet(request, id):
