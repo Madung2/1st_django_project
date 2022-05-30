@@ -62,3 +62,23 @@ def logout(request):
     auth.logout(request)
     return redirect('/')
     #로그인이 되어 있다면 tweet으로 보내주고 로그아웃이 되어 있다면 로그인 페이지로 보내줄거임
+
+
+#########################팔로우기능################################
+
+@login_required
+def user_view(request):
+    if request.method == 'GET':
+        #사용자를 불러오기, exclude와 request.user.username을 사용해서 로그인한 사용자 제외
+        user_list = UserModel.objects.all().exclude(username=request.user.username)
+        return render(request, 'user/user_list.html', {'user_list': user_list})
+
+@login_required
+def user_follow(request, id):
+    me = request.user #나
+    click_user = UserModel.objects.get(id=id)#follow버튼 클릭한 사람
+    if me in click_user.followee.all():#이미 follow되어 있으면
+        click_user.followee.remove(request.user)#언팔
+    else:
+        click_user.followee.add(request.user)#아니면 팔로
+    return redirect('/user')
