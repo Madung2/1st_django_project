@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import UserModel
 from django.contrib.auth import get_user_model
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def sign_up_view(request):
@@ -17,20 +19,37 @@ def sign_up_view(request):
         elif exist_user:
             return render(request, 'user/signup.html')
         else:
-            new_user = UserModel()
-            new_user.username = username
-            new_user.password = password
-            new_user.bio = bio
-            new_user.save()
-        return redirect('/sign-in')
+            UserModel.objects.create_user(username=username,password=password, bio=bio)
+            return redirect('/sign-in')
 
     elif request.method == 'GET':
-        return render(request, 'user/signup.html')
+        ur_user = request.user.is_authenticated
+        if ur_user:
+            return redirect('/')
+        else:
+            return render(request, 'user/signup.html')
 
 
 def sign_in_view(request):
-    if request.method == 'POST':
-        return HttpResponse("로그인 성공")
-    elif request.method == 'GET':
 
-        return render(request, 'user/signin.html')
+    if request.method == 'POST':
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+
+        me = auth.authenticate(request, username=username, password=password)
+        if me is not None:
+            auth.login(request, me)
+            return redirect('/tweet')
+        else:
+            return redirect('/sign-in')
+    elif request.method == 'GET':
+        ur_user = request.user.is_authenticated
+        if ur_user:
+            return redirect('/')
+        else:
+            return render(request, 'user/signin.html')
+
+@login_required()
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
