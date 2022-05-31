@@ -22,5 +22,5 @@ urlpatterns = [
     path('test/', views.base_response, name='first_test'),
     path('first/', views.first_view, name='first_view'),
     path('', include('user.urls')), #유저의 url과 연결
-path('', include('tweet.urls')),
+    path('', include('tweet.urls')),
 ]
