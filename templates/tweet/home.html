@@ -29,9 +29,11 @@
                                         <form action="/tweet/" method="post">
                                             {% csrf_token %}
                                             <div class="form-group mb-2">
-                                                <textarea class="form-control" style="resize: none" name='my-content' id="my-content"></textarea>
+                                                <textarea class="form-control" style="resize: none" name='my-content'
+                                                          id="my-content"></textarea>
                                             </div>
-                                            <button type="submit" class="btn btn-primary" style="float:right;">작성하기</button>
+                                            <button type="submit" class="btn btn-primary" style="float:right;">작성하기
+                                            </button>
                                         </form>
                                         </p>
                                     </div>
@@ -43,24 +45,37 @@
                 <hr>
                 <!-- 작성 된 글이 나오는 곳 -->
                 <div class="row">
-                    {%  for tw in tweet %}
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="media">
-                                    <div class="media-body">
-                                        <h5 class="mt-0">{{ tw.content }}</h5>
+                    {% for tw in tweet %}
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% if tw.author == user %}
+                                        <div style="text-align: right">
+                                            <a href="/tweet/delete/{{ tw.id }}">
+                                                <span class="badge rounded-pill bg-danger">삭제</span>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                    <div style="text-align: right">
+                                        <a href="#">
+                                            <span class="badge rounded-pill bg-success">보기</span>
+                                        </a>
                                     </div>
-                                    <div style="text-align:right">
+
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <h5 class="mt-0">{{ tw.content }}</h5>
+                                        </div>
+                                        <div style="text-align:right">
                                         <span style="font-size:small">
                                             {{ tw.author.username }}-{{ tw.created_at|timesince }}전
                                         </span>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
 
